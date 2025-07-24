@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /auth/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Authentication]
@@ -44,7 +44,7 @@ router.post('/register', validateDto(RegisterUserDto), register);
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     summary: Login a user
  *     tags: [Authentication]
@@ -80,7 +80,7 @@ router.post('/login', validateDto(LoginUserDto), login);
 
 /**
  * @swagger
- * /api/auth/me:
+ * /auth/me:
  *   get:
  *     summary: Get current logged in user
  *     tags: [Authentication]

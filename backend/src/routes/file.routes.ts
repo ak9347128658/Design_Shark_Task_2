@@ -22,7 +22,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/files/folders:
+ * /files/folders:
  *   post:
  *     summary: Create a new folder
  *     tags: [Files]
@@ -57,7 +57,7 @@ router.post('/folders', auth, validateDto(CreateFolderDto), createFolder);
 
 /**
  * @swagger
- * /api/files:
+ * /files:
  *   post:
  *     summary: Create a new file (get upload URL)
  *     tags: [Files]
@@ -97,7 +97,7 @@ router.post('/', auth, validateDto(CreateFileDto), createFile);
 
 /**
  * @swagger
- * /api/files:
+ * /files:
  *   get:
  *     summary: Get all files and folders for the current user
  *     tags: [Files]
@@ -147,7 +147,7 @@ router.get('/', auth, getFiles);
 
 /**
  * @swagger
- * /api/files/{id}:
+ * /files/{id}:
  *   get:
  *     summary: Get a file or folder by ID
  *     tags: [Files]
@@ -188,7 +188,7 @@ router.get('/:id', auth, getFileById);
 
 /**
  * @swagger
- * /api/files/{id}:
+ * /files/{id}:
  *   put:
  *     summary: Update a file or folder
  *     tags: [Files]
@@ -232,7 +232,7 @@ router.put('/:id', auth, validateDto(UpdateFileDto), updateFile);
 
 /**
  * @swagger
- * /api/files/{id}:
+ * /files/{id}:
  *   delete:
  *     summary: Delete a file or folder
  *     tags: [Files]
@@ -268,7 +268,7 @@ router.delete('/:id', auth, deleteFile);
 
 /**
  * @swagger
- * /api/files/{id}/share:
+ * /files/{id}/share:
  *   post:
  *     summary: Share a file or folder with other users
  *     tags: [Files]
@@ -312,7 +312,7 @@ router.post('/:id/share', auth, validateDto(ShareFileDto), shareFile);
 
 /**
  * @swagger
- * /api/files/{id}/share/{userId}:
+ * /files/{id}/share/{userId}:
  *   delete:
  *     summary: Unshare a file or folder with a user
  *     tags: [Files]

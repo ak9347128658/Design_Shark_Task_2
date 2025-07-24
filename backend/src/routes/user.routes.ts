@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/users:
+ * /users:
  *   get:
  *     summary: Get all users
  *     tags: [Users]
@@ -45,7 +45,7 @@ router.get('/', auth, authorize(UserRole.ADMIN), getAllUsers);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   get:
  *     summary: Get a user by ID
  *     tags: [Users]
@@ -81,7 +81,7 @@ router.get('/:id', auth, authorize(UserRole.ADMIN), getUserById);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   put:
  *     summary: Update a user
  *     tags: [Users]
@@ -125,7 +125,7 @@ router.put('/:id', auth, authorize(UserRole.ADMIN), validateDto(UpdateUserDto), 
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /users/{id}:
  *   delete:
  *     summary: Delete a user
  *     tags: [Users]
