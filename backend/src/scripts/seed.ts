@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { hash } from 'bcryptjs';
 import User from '../models/User';
 import { UserRole } from '../types';
 import connectDB from '../config/database';
@@ -29,13 +28,11 @@ async function seedAdmin() {
       process.exit(0);
     }
 
-    // Create admin user
-    const hashedPassword = await hash(adminPassword, 10);
     
     const admin = new User({
       name: adminName,
       email: adminEmail,
-      password: hashedPassword,
+      password: adminPassword,
       role: UserRole.ADMIN,
     });
 

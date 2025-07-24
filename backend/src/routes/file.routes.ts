@@ -60,19 +60,27 @@ router.post('/folders', auth, validateDto(CreateFolderDto), createFolder);
  * @swagger
  * /files:
  *   post:
- *     summary: Create a new file (get upload URL)
+ *     summary: Create a new file by uploading file directly
  *     tags: [Files]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/CreateFileDto'
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The file to upload
+ *               parent:
+ *                 type: string
+ *                 description: Parent folder ID (null for root level)
  *     responses:
  *       201:
- *         description: File entry created and upload URL generated
+ *         description: File uploaded successfully
  *         content:
  *           application/json:
  *             schema:
@@ -87,14 +95,12 @@ router.post('/folders', auth, validateDto(CreateFolderDto), createFolder);
  *                   properties:
  *                     file:
  *                       $ref: '#/components/schemas/File'
- *                     uploadUrl:
- *                       $ref: '#/components/schemas/PresignedUrl'
  *       400:
  *         description: Bad request
  *       401:
  *         description: Not authorized
  */
-router.post('/', auth, validateDto(CreateFileDto), createFile);
+router.post('/', auth, uploadMiddleware, createFile);
 
 /**
  * @swagger

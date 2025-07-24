@@ -37,7 +37,13 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Swagger API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  swaggerOptions: {
+    docExpansion: 'none', // 'none' means all sections are collapsed by default
+    filter: true,
+    tagsSorter: 'alpha'
+  }
+}));
 
 // Mount routes
 app.use('/api/auth', authRoutes);

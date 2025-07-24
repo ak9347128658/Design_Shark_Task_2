@@ -13,6 +13,8 @@ const router = Router();
  *   post:
  *     summary: Register a new user
  *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

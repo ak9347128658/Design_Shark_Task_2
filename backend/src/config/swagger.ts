@@ -18,6 +18,13 @@ const options = {
         description: 'API Server',
       },
     ],
+    // Custom extension for Swagger UI display options
+    'x-tagGroups': [
+      {
+        name: 'API Endpoints',
+        tags: ['Authentication', 'Users', 'Files']
+      }
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -60,6 +67,22 @@ const options = {
               description: 'Timestamp of last user update',
             },
           },
+        },
+        FileUpload: {
+          type: 'object',
+          properties: {
+            file: {
+              type: 'string',
+              format: 'binary',
+              description: 'The file to upload',
+            },
+            parent: {
+              type: 'string',
+              description: 'Parent folder ID (null for root level)',
+              nullable: true,
+            },
+          },
+          required: ['file'],
         },
         RegisterUserDto: {
           type: 'object',

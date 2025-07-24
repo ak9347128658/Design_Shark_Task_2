@@ -441,9 +441,9 @@ export const shareFile = async (req: Request, res: Response) => {
   }
 };
 
-/** is the owner of the file
- * @desc    Unshare a file or folder with a userg() !== req.user?.id) {
- * @route   DELETE /api/files/:id/share/:userIdus(403).json({
+/**
+ * @desc    Unshare a file or folder with a user
+ * @route   DELETE /api/files/:id/share/:userId
  * @access  Private
  */
 export const unshareFile = async (req: Request, res: Response) => {
