@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { register, login, getMe } from '../controllers/auth.controller';
-import { auth } from '../middleware/auth.middleware';
+import { auth, authorize} from '../middleware/auth.middleware';
 import { validateDto } from '../middleware/validate.middleware';
 import { RegisterUserDto, LoginUserDto } from '../dto/user.dto';
+import { UserRole } from '../types';
 
 const router = Router();
 
@@ -40,7 +41,7 @@ const router = Router();
  *       400:
  *         description: Bad request
  */
-router.post('/register', validateDto(RegisterUserDto), register);
+router.post('/register',auth,authorize(UserRole.ADMIN), validateDto(RegisterUserDto), register);
 
 /**
  * @swagger

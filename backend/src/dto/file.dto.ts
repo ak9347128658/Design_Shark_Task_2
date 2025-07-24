@@ -1,5 +1,6 @@
 import { IsString, IsBoolean, IsOptional, IsMongoId, IsArray, Min, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
+import { PaginationDto } from './pagination.dto';
 
 export class CreateFolderDto {
   @IsString()
@@ -42,14 +43,14 @@ export class ShareFileDto {
   userIds!: string[];
 }
 
-export class FileQueryDto {
+export class FileQueryDto extends PaginationDto {
   @IsString()
   @IsOptional()
   search?: string;
 
   @IsMongoId()
   @IsOptional()
-  parent?: string;
+  parent?: string | null;
 
   @IsBoolean()
   @IsOptional()

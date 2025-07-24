@@ -14,7 +14,7 @@ const tokenService = container.resolve(TokenService);
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.validatedBody;
-
+    console.log(process.env.MONGODB_URI); // Debugging line to check the environment variable
     // Create user
     const user = await User.create({
       name,

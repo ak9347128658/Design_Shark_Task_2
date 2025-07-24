@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 import dotenv from 'dotenv';
 
 // Load environment variables
@@ -12,8 +12,13 @@ const options = {
 // Connect to MongoDB
 const connectDB = async (): Promise<void> => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI as string, options);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    await mongoose.connect(process.env.MONGODB_URI!, {
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
+      authSource: 'admin',
+    } as ConnectOptions);
+    console.log('MongoDB connected successfully');
+    // console.log(`MongoDB Connected: ${process.env.MONGODB_URI}`);
   } catch (error: any) {
     console.error(`Error: ${error.message}`);
     process.exit(1);

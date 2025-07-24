@@ -126,4 +126,17 @@ export class AzureStorageService {
     const blobClient = this.getBlobClient(filePath);
     return await blobClient.exists();
   }
+
+  /**
+   * Upload a file directly to Azure Blob Storage
+   */
+  async uploadFile(filePath: string, fileContent: Buffer, contentType: string): Promise<void> {
+    const blobClient = this.getBlobClient(filePath);
+    
+    await blobClient.upload(fileContent, fileContent.length, {
+      blobHTTPHeaders: {
+        blobContentType: contentType
+      }
+    });
+  }
 }

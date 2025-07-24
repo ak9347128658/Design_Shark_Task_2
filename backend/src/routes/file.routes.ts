@@ -8,6 +8,7 @@ import {
   deleteFile,
   shareFile,
   unshareFile,
+  uploadMiddleware
 } from '../controllers/file.controller';
 import { auth } from '../middleware/auth.middleware';
 import { validateDto } from '../middleware/validate.middleware';
@@ -124,6 +125,20 @@ router.post('/', auth, validateDto(CreateFileDto), createFile);
  *         schema:
  *           type: boolean
  *         description: Only show shared files/folders
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 10
+ *         description: Number of items per page
  *     responses:
  *       200:
  *         description: List of files and folders
@@ -136,6 +151,17 @@ router.post('/', auth, validateDto(CreateFileDto), createFile);
  *                   type: boolean
  *                 count:
  *                   type: number
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: number
+ *                     limit:
+ *                       type: number
+ *                     totalPages:
+ *                       type: number
+ *                     total:
+ *                       type: number
  *                 data:
  *                   type: array
  *                   items:

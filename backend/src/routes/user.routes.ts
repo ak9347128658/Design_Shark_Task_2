@@ -20,6 +20,21 @@ const router = Router();
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 10
+ *         description: Number of items per page
  *     responses:
  *       200:
  *         description: List of all users
@@ -32,6 +47,17 @@ const router = Router();
  *                   type: boolean
  *                 count:
  *                   type: number
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: number
+ *                     limit:
+ *                       type: number
+ *                     totalPages:
+ *                       type: number
+ *                     total:
+ *                       type: number
  *                 data:
  *                   type: array
  *                   items:

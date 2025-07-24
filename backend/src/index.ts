@@ -5,7 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
-import { container } from 'tsyringe';
+// import { container } from 'tsyringe';
 import connectDB from './config/database';
 import swaggerSpec from './config/swagger';
 import { errorHandler } from './middleware/error.middleware';

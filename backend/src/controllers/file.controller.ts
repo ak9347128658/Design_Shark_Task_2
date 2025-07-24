@@ -4,10 +4,27 @@ import File from '../models/File';
 import User from '../models/User';
 import { container } from 'tsyringe';
 import { AzureStorageService } from '../services/azure-storage.service';
-import { FileQueryDto } from '../dto/file.dto';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import { FileQueryDto } from '../dto/file.dto'; // Add this import
+import { error } from 'console';
 
 // Service instances
 const storageService = container.resolve(AzureStorageService);
+
+// Configure multer for memory storage
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  }
+});
+
+/**
+ * Middleware to handle file upload
+ */
+export const uploadMiddleware = upload.single('file');
 
 /**
  * @desc    Create a new folder
@@ -62,13 +79,22 @@ export const createFolder = async (req: Request, res: Response) => {
 };
 
 /**
- * @desc    Create a new file
+ * @desc    Create a new file with direct upload
  * @route   POST /api/files
  * @access  Private
  */
 export const createFile = async (req: Request, res: Response) => {
   try {
-    const { name, type, size, parent } = req.validatedBody;
+    // Check if file was uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded',
+      });
+    }
+
+    const { parent } = req.body;
+    const uploadedFile = req.file;
     
     // Check if parent folder exists if provided
     if (parent) {
@@ -92,29 +118,30 @@ export const createFile = async (req: Request, res: Response) => {
       }
     }
 
-    // Generate unique file path
-    const filePath = `${req.user?.id}/${Date.now()}-${name}`;
+    // Generate unique filename to prevent collisions
+    const fileExtension = path.extname(uploadedFile.originalname);
+    const fileName = `${uuidv4()}${fileExtension}`;
+    const filePath = `${req.user?.id}/${Date.now()}-${fileName}`;
+
+    // Upload the file directly to Azure Blob Storage
+    await storageService.uploadFile(filePath, uploadedFile.buffer, uploadedFile.mimetype);
 
     // Create file record in database
     const file = await File.create({
-      name,
-      type,
-      size,
+      name: uploadedFile.originalname,
+      type: uploadedFile.mimetype,
+      size: uploadedFile.size,
       path: filePath,
       owner: req.user?.id,
       parent: parent || null,
       isFolder: false,
     });
 
-    // Generate presigned upload URL
-    const uploadUrl = await storageService.getUploadUrl(filePath);
-
     res.status(201).json({
       success: true,
-      message: 'File created successfully',
+      message: 'File uploaded successfully',
       data: {
-        file,
-        uploadUrl,
+        file
       },
     });
   } catch (error: any) {
@@ -132,7 +159,7 @@ export const createFile = async (req: Request, res: Response) => {
  */
 export const getFiles = async (req: Request, res: Response) => {
   try {
-    const { search, parent, isFolder, shared } = req.query as any as FileQueryDto;
+    const { search, parent, isFolder, shared, page = 1, limit = 10 } = req.query as any as FileQueryDto;
     
     // Build query
     const query: any = {
@@ -162,14 +189,28 @@ export const getFiles = async (req: Request, res: Response) => {
       query.sharedWith = req.user?.id;
     }
     
-    // Execute query
+    // Calculate pagination values
+    const skip = (page - 1) * limit;
+    
+    // Execute query with pagination
     const files = await File.find(query)
       .sort({ isFolder: -1, name: 1 }) // Folders first, then alphabetical
+      .skip(skip)
+      .limit(limit)
       .populate('owner', 'name email');
+    
+    // Get total count for pagination
+    const total = await File.countDocuments(query);
     
     res.status(200).json({
       success: true,
-      count: files.length,
+      count: total,
+      pagination: {
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        total
+      },
       data: files,
     });
   } catch (error: any) {
@@ -376,23 +417,15 @@ export const shareFile = async (req: Request, res: Response) => {
     const users = await Promise.all(
       userIds.map((userId: string) => User.findById(userId))
     );
-
-    if (users.some((user) => user === null)) {
+    if (users.some(user => user === null)) {
       return res.status(400).json({
         success: false,
         message: 'One or more users do not exist',
       });
     }
 
-    // Add users to sharedWith array if not already present
-    userIds.forEach((userId: string) => {
-      // Cast the existing ObjectIds to strings for comparison
-      if (!file.sharedWith.some(id => id.toString() === userId)) {
-        // Type assertion to tell TypeScript it's okay
-        file.sharedWith.push(new mongoose.Types.ObjectId(userId) as any);
-      }
-    });
-
+    // Add shared users to file
+    file.sharedWith.push(...userIds.map((id: string) => new mongoose.Types.ObjectId(id) as any));
     await file.save();
 
     res.status(200).json({
@@ -408,15 +441,15 @@ export const shareFile = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * @desc    Unshare a file or folder with a user
- * @route   DELETE /api/files/:id/share/:userId
+/** is the owner of the file
+ * @desc    Unshare a file or folder with a userg() !== req.user?.id) {
+ * @route   DELETE /api/files/:id/share/:userIdus(403).json({
  * @access  Private
  */
 export const unshareFile = async (req: Request, res: Response) => {
   try {
     const file = await File.findById(req.params.id);
-    const userId = req.params.userId;
+    const userId = req.params.userId; // Remove user from sharedWith array
 
     if (!file) {
       return res.status(404).json({

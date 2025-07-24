@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 import { UserRole } from '../types';
+import { PaginationDto } from '../dto/pagination.dto';
 
 /**
  * @desc    Get all users
@@ -9,11 +10,29 @@ import { UserRole } from '../types';
  */
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find().select('-password');
-
+    const { page = 1, limit = 10 } = req.query as any as PaginationDto;
+    
+    // Calculate pagination values
+    const skip = (page - 1) * limit;
+    
+    // Execute query with pagination
+    const users = await User.find()
+      .select('-password')
+      .skip(skip)
+      .limit(limit);
+    
+    // Get total count for pagination
+    const total = await User.countDocuments();
+    
     res.status(200).json({
       success: true,
-      count: users.length,
+      count: total,
+      pagination: {
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        total
+      },
       data: users,
     });
   } catch (error: any) {

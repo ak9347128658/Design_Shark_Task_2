@@ -263,6 +263,23 @@ const options = {
             },
           },
         },
+        PaginationDto: {
+          type: 'object',
+          properties: {
+            page: {
+              type: 'integer',
+              minimum: 1,
+              default: 1,
+              description: 'Page number',
+            },
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              default: 10,
+              description: 'Number of items per page',
+            },
+          },
+        },
       },
     },
     tags: [
