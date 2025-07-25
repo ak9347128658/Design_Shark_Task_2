@@ -41,9 +41,24 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   swaggerOptions: {
     docExpansion: 'none', // 'none' means all sections are collapsed by default
     filter: true,
-    tagsSorter: 'alpha'
+    tagsSorter: 'alpha',
+    defaultModelsExpandDepth: -1, // Hide the models section by default
+    defaultModelExpandDepth: 1,
+    displayRequestDuration: true, // Display the request duration (in milliseconds)
+    servers: [
+      {
+        url: 'http://localhost:5000/api',
+        description: 'Local Development Server'
+      }
+    ]
   }
 }));
+
+// complte swagger json
+app.get('/swagger.json', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // Mount routes
 app.use('/api/auth', authRoutes);

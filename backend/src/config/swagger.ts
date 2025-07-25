@@ -14,9 +14,17 @@ const options = {
     },
     servers: [
       {
-        url: '/api',
-        description: 'API Server',
+        url: 'http://localhost:5000/api',
+        description: 'Local Development Server',
       },
+      {
+        url: 'https://uat-api.example.com/api',
+        description: 'UAT Server',
+      },
+      {
+        url: 'https://api.example.com/api',
+        description: 'Production Server',
+      }
     ],
     // Custom extension for Swagger UI display options
     'x-tagGroups': [
