@@ -129,19 +129,10 @@ export const fileService = {
         return '/placeholder-download.zip';
       }
 
-      // First get the file details which will include the downloadUrl (SAS URL)
-      const response = await api.get(`/files/${id}`);
-      
-      // Return the downloadUrl from the response if available
-      if (response.data && response.data.data && response.data.data.downloadUrl) {
-        return response.data.data.downloadUrl.url;
-      }
-      
-      // Fallback to the old method if downloadUrl is not available
-      const downloadResponse = await api.get(`/files/${id}/download`, {
+      const response = await api.get(`/files/${id}/download`, {
         responseType: 'blob',
       });
-      return downloadResponse.data;
+      return response.data;
     } catch (error) {
       throw error.response?.data || error;
     }

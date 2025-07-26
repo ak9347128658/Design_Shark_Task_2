@@ -171,14 +171,7 @@ router.post('/', auth, uploadMiddleware, createFile);
  *                 data:
  *                   type: array
  *                   items:
- *                     type: object
- *                     allOf:
- *                       - $ref: '#/components/schemas/File'
- *                       - type: object
- *                         properties:
- *                           downloadUrl:
- *                             $ref: '#/components/schemas/PresignedUrl'
- *                             description: SAS URL for file download (only for files, not folders)
+ *                     $ref: '#/components/schemas/File'
  *       401:
  *         description: Not authorized
  */
