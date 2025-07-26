@@ -28,7 +28,7 @@ export default function Home() {
       <div className="w-full max-w-md space-y-6 mt-12">
         <Button 
           size="lg" 
-          className="w-full" 
+          className="w-full bg-[var(--primary)]  text-primary-foreground" 
           onClick={() => router.push("/login")}
         >
           Get Started

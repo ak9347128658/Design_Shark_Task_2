@@ -69,12 +69,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Clear localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    
+    localStorage.removeItem("TANSTACK_QUERY_CACHE");
     // Clear query cache
     queryClient.clear();
     
-    // Redirect to login
-    router.push("/login");
+    setTimeout(() => {
+      router.push("/login");
+    }, 1000);
   };
 
   const value = {
@@ -94,4 +95,4 @@ export const useAuth = () => {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-};
+}
