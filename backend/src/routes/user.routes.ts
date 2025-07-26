@@ -67,7 +67,7 @@ const router = Router();
  *       403:
  *         description: Forbidden - Not an admin
  */
-router.get('/', auth, authorize(UserRole.ADMIN), getAllUsers);
+router.get('/', auth, getAllUsers);
 
 /**
  * @swagger

@@ -8,6 +8,7 @@ import { RegisterSchema, RegisterInputs } from "@/apis/auth/auth.types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { queryClient } from "@/providers/query-provider";
 
 export default function AddUserPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,9 +32,12 @@ export default function AddUserPage() {
   
   const onSubmit = async (data: RegisterInputs) => {
     try {
-      await registerMutation.mutateAsync(data);
-      toast.success("User created successfully!");
-      reset();
+      const registerUser = await registerMutation.mutateAsync(data);
+      if(registerUser) {
+        queryClient.invalidateQueries({queryKey: ['users']});
+        toast.success("User created successfully!");
+        reset();
+      }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to create user");
@@ -41,14 +45,14 @@ export default function AddUserPage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-900 p-4 text-gray-900 dark:text-white border-b dark:border-gray-700">
+    <div className="min-h-screen bg-background">
+      <header className="bg-card border-b border-border p-4 text-foreground shadow-sm">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <h1 className="text-xl font-bold uppercase tracking-wider">
               DESIGN SH<span color='red'>A</span>RK
             </h1>
-            <span className="ml-2 text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400">
+            <span className="ml-2 text-xs uppercase tracking-widest text-muted-foreground">
               ADMIN PANEL
             </span>
           </div>
@@ -61,65 +65,66 @@ export default function AddUserPage() {
             variant="ghost"
             onClick={() => router.back()}
             className="mr-4"
+            style={{ backgroundColor: 'var(--primary)' }}
           >
             <ArrowLeft size={18} className="mr-1" />
             Back
           </Button>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+          <h2 className="text-2xl font-bold text-foreground">
             Add New User
           </h2>
         </div>
         
-        <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div className="max-w-md mx-auto bg-card border border-border p-6 rounded-lg shadow-lg">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Name
               </label>
               <input
                 type="text"
                 {...register("name")}
-                className="w-full rounded border border-gray-300 dark:border-gray-600 p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground p-2.5 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
                 placeholder="Enter user name"
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-500">
+                <p className="mt-1 text-sm text-destructive">
                   {errors.name.message}
                 </p>
               )}
             </div>
             
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Email
               </label>
               <input
                 type="email"
                 {...register("email")}
-                className="w-full rounded border border-gray-300 dark:border-gray-600 p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground p-2.5 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
                 placeholder="Enter user email"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-500">
+                <p className="mt-1 text-sm text-destructive">
                   {errors.email.message}
                 </p>
               )}
             </div>
             
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Password
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground p-2.5 pr-12 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
                   placeholder="Enter user password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600 dark:text-gray-400"
+                  className="absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -130,25 +135,25 @@ export default function AddUserPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-500">
+                <p className="mt-1 text-sm text-destructive">
                   {errors.password.message}
                 </p>
               )}
             </div>
             
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Role
               </label>
               <select
                 {...register("role")}
-                className="w-full rounded border border-gray-300 dark:border-gray-600 p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full rounded-md border border-input bg-background text-foreground p-2.5 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
               </select>
               {errors.role && (
-                <p className="mt-1 text-sm text-red-500">
+                <p className="mt-1 text-sm text-destructive">
                   {errors.role.message}
                 </p>
               )}
@@ -158,6 +163,7 @@ export default function AddUserPage() {
               type="submit"
               className="w-full"
               isLoading={registerMutation.isPending}
+              style={{ backgroundColor: 'var(--primary)' }}
             >
               Create User
             </Button>

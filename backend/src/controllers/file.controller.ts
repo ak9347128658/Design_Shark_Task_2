@@ -161,13 +161,11 @@ export const getFiles = async (req: Request, res: Response) => {
   try {
     const { search, parent, isFolder, shared, page = 1, limit = 10 } = req.query as any as FileQueryDto;
     
-    // Build query
-    const query: any = {
-      $or: [
-        { owner: req.user?.id },
-        { sharedWith: req.user?.id },
-      ],
-    };
+    // Convert user ID to ObjectId for proper comparison
+    const userId = new mongoose.Types.ObjectId(req.user?.id);
+    
+    // Build base query
+    const query: any = {};
     
     // Add search filter
     if (search) {
@@ -177,18 +175,27 @@ export const getFiles = async (req: Request, res: Response) => {
     // Add parent filter
     if (parent !== undefined) {
       query.parent = parent || null;
-    }else{
-      query.parent = null; // Default to root if no parent specified
+    } else {
+      if(!(shared === "true")) 
+         query.parent = null; // Default to root if no parent specified
     }
     
     // Add isFolder filter
     if (isFolder !== undefined) {
-      query.isFolder = isFolder;
+      query.isFolder = isFolder === "true";
     }
     
-    // Add shared filter
-    if (shared) {
-      query.sharedWith = req.user?.id;
+    // Add ownership/sharing filter
+    if (shared === "true") {
+      // Only show files shared with this user (not owned by them)
+      query.sharedWith = { $in: [userId] };
+      query.owner = { $ne: userId }; // Exclude files owned by the user
+    } else {
+      // Show files owned by user OR shared with user
+      query.$or = [
+        { owner: userId },
+        { sharedWith: { $in: [userId] } }
+      ];
     }
     
     // Calculate pagination values

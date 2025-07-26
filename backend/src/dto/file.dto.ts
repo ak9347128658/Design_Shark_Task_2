@@ -52,13 +52,11 @@ export class FileQueryDto extends PaginationDto {
   @IsOptional()
   parent?: string | null;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  @Type(() => Boolean)
-  isFolder?: boolean;
+  isFolder?: string;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  @Type(() => Boolean)
-  shared?: boolean;
+  shared?: string;
 }

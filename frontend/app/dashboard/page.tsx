@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useFilesQuery } from "@/apis/files/files.query";
 import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, Share2 } from "lucide-react";
 import FileCard from "@/components/files/FileCard";
 import FileViewerModal from "@/components/files/FileViewerModal";
 import CreateFolderModal from "@/components/files/CreateFolderModal";
@@ -12,9 +12,13 @@ import UploadFileModal from "@/components/files/UploadFileModal";
 import ShareFileModal from "@/components/files/ShareFileModal";
 import BreadcrumbTrail from "@/components/files/BreadcrumbTrail";
 import { ThemeToggle } from "@/providers/theme-provider";
+import { downloadFile } from "@/apis/files/files.api";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function UserDashboard() {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   
   useEffect(() => {
@@ -44,6 +48,20 @@ export default function UserDashboard() {
     setCurrentFolder(folderId);
   };
 
+  const handleShareFile = (fileId: string) => {
+    setShareFileId(fileId);
+  };
+
+  const handleDownloadFile = async (fileId: string) => {
+    try {
+      await downloadFile(fileId);
+      toast.success("File download started");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to download file");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <header className="bg-card border-b border-border shadow-sm">
@@ -54,7 +72,7 @@ export default function UserDashboard() {
             </div>
             <div>
               <h1 className="text-xl font-bold uppercase tracking-wider text-foreground">
-                DESIGN SH<span color='red'>A</span>RK
+                DESIGN SH<span style={{ color: 'red' }}>A</span>RK
               </h1>
               <span className="text-xs uppercase tracking-widest text-muted-foreground">
                 FILE COLLECTION
@@ -113,8 +131,17 @@ export default function UserDashboard() {
             <div className="flex gap-2">
               <Button 
                 variant="outline"
-                onClick={() => setShowCreateFolder(true)}
+                onClick={() => router.push("/dashboard/shared")}
                 className="flex items-center gap-2"
+              >
+                <Share2 size={16} />
+                Shared Files
+              </Button>
+              
+              <Button 
+                variant="outline"
+                onClick={() => setShowCreateFolder(true)}
+                className="flex items-center gap-2 bg-[var(--primary)] text-primary-foreground"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -126,7 +153,7 @@ export default function UserDashboard() {
                 onClick={() => setShowUploadFile(true)} 
                 disabled={!currentFolder}
                 title={!currentFolder ? "Select a folder first" : "Upload a file"}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-[var(--primary)] text-primary-foreground"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -165,6 +192,8 @@ export default function UserDashboard() {
                 file={file}
                 onFolderClick={handleNavigateToFolder}
                 onViewFile={(fileId) => setViewFileId(fileId)}
+                onShareFile={handleShareFile}
+                onDownloadFile={handleDownloadFile}
               />
             ))
           )}

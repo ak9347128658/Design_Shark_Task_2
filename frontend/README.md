@@ -1,5 +1,26 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Features
+
+### File Management System
+- Upload and organize files in folders
+- Share files with other users
+- Download files with secure presigned URLs
+- View files with integrated file viewer
+- Dark/Light theme support
+
+### User Management (Admin)
+- User administration with pagination
+- Edit user profiles
+- Delete users with confirmation
+
+### Shared Files
+- **User Dashboard**: Access files shared with you at `/dashboard/shared`
+- **Admin Dashboard**: View all shared files in the system at `/admin/dashboard/shared`
+- Both include pagination for large file lists
+- Search functionality for shared files
+- Download and view shared files
+
 ## Getting Started
 
 First, run the development server:

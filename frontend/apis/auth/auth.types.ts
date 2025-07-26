@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // User schema
 export const UserSchema = z.object({
-  id: z.string(),
+  _id: z.string(),
   name: z.string(),
   email: z.string().email(),
   role: z.enum(['admin', 'user']),

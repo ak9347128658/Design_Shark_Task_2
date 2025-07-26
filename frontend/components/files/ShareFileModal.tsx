@@ -72,7 +72,7 @@ export default function ShareFileModal({ fileId, onClose }: ShareFileModalProps)
       
       toast.success("Sharing settings updated successfully");
       onClose();
-    } catch (error) {
+    } catch {
       toast.error("Failed to update sharing settings");
     }
   };
@@ -86,7 +86,7 @@ export default function ShareFileModal({ fileId, onClose }: ShareFileModalProps)
           </h2>
           <button 
             onClick={onClose} 
-            className="text-muted-foreground hover:text-foreground transition-colors duration-200 p-1 rounded-lg hover:bg-accent"
+            className="text-muted-foreground hover:text-foreground transition-colors duration-200 p-1 rounded-lg hover:bg-accent cursor-pointer"
           >
             <X size={20} />
           </button>
@@ -119,7 +119,7 @@ export default function ShareFileModal({ fileId, onClose }: ShareFileModalProps)
           ) : (
             <ul className="divide-y divide-border">
               {filteredUsers.map(user => (
-                <li key={user.id} className="p-4 hover:bg-accent/50 transition-colors duration-200">
+                <li key={user._id} className="p-4 hover:bg-accent/50 transition-colors duration-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -133,12 +133,12 @@ export default function ShareFileModal({ fileId, onClose }: ShareFileModalProps)
                       </div>
                     </div>
                     <Button
-                      variant={selectedUsers.includes(user.id) ? "primary" : "outline"}
+                      variant={selectedUsers.includes(user._id) ? "primary" : "outline"}
                       size="sm"
-                      onClick={() => handleToggleUser(user.id)}
+                      onClick={() => handleToggleUser(user._id)}
                       className="min-w-[80px]"
                     >
-                      {selectedUsers.includes(user.id) ? (
+                      {selectedUsers.includes(user._id) ? (
                         <>
                           <UserMinus size={14} className="mr-1" />
                           Remove

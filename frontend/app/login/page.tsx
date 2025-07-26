@@ -130,6 +130,7 @@ export default function LoginPage() {
             type="submit"
             className="w-full"
             size="lg"
+            style={{ backgroundColor: 'var(--primary)' }}
             isLoading={loginMutation.isPending}
           >
             {loginMutation.isPending ? 'Signing in...' : 'Sign In'}

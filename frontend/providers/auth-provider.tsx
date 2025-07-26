@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { queryClient } from "./query-provider";
 
 interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   role: "admin" | "user";

@@ -11,9 +11,11 @@ interface FileCardProps {
   file: File;
   onFolderClick?: (folderId: string) => void;
   onViewFile?: (fileId: string) => void;
+  onShareFile?: (fileId: string) => void;
+  onDownloadFile?: (fileId: string) => void;
 }
 
-export default function FileCard({ file, onFolderClick, onViewFile }: FileCardProps) {
+export default function FileCard({ file, onFolderClick, onViewFile, onShareFile, onDownloadFile }: FileCardProps) {
   const [showActions, setShowActions] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newName, setNewName] = useState(file.name);
@@ -127,7 +129,7 @@ export default function FileCard({ file, onFolderClick, onViewFile }: FileCardPr
       </div>
       
       <button 
-        className="absolute top-3 right-3 p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent rounded-lg"
+        className="absolute top-3 right-3 p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-accent rounded-lg cursor-pointer"
         onClick={(e) => {
           e.stopPropagation();
           setShowActions(!showActions);
@@ -144,7 +146,7 @@ export default function FileCard({ file, onFolderClick, onViewFile }: FileCardPr
           {!file.isFolder && (
             <>
               <button 
-                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200"
+                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowActions(false);
@@ -155,15 +157,23 @@ export default function FileCard({ file, onFolderClick, onViewFile }: FileCardPr
                 View
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200"
-                onClick={(e) => e.stopPropagation()}
+                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowActions(false);
+                  if (onDownloadFile) onDownloadFile(file._id);
+                }}
               >
                 <Download size={14} />
                 Download
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200"
-                onClick={(e) => e.stopPropagation()}
+                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowActions(false);
+                  if (onShareFile) onShareFile(file._id);
+                }}
               >
                 <Share2 size={14} />
                 Share
@@ -172,7 +182,7 @@ export default function FileCard({ file, onFolderClick, onViewFile }: FileCardPr
             </>
           )}
           <button 
-            className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200"
+            className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent flex items-center gap-2 transition-colors duration-200 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               setIsRenaming(true);
@@ -183,7 +193,7 @@ export default function FileCard({ file, onFolderClick, onViewFile }: FileCardPr
             Rename
           </button>
           <button 
-            className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-destructive/10 flex items-center gap-2 transition-colors duration-200"
+            className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-destructive/10 flex items-center gap-2 transition-colors duration-200 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               handleDelete();

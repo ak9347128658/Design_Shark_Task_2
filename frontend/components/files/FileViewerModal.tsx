@@ -100,7 +100,7 @@ export default function FileViewerModal({ fileId, onClose }: FileViewerModalProp
           </div>
           <button 
             onClick={onClose} 
-            className="text-muted-foreground hover:text-foreground transition-colors duration-200 p-2 rounded-lg hover:bg-accent"
+            className="text-muted-foreground hover:text-foreground transition-colors duration-200 p-2 rounded-lg hover:bg-accent cursor-pointer"
           >
             <X size={20} />
           </button>

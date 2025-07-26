@@ -34,7 +34,7 @@ export default function CreateFolderModal({ parentId, onClose }: CreateFolderMod
       await createFolderMutation.mutateAsync(data);
       toast.success("Folder created successfully");
       onClose();
-    } catch (error) {
+    } catch {
       toast.error("Failed to create folder");
     }
   };
@@ -48,7 +48,7 @@ export default function CreateFolderModal({ parentId, onClose }: CreateFolderMod
           </h2>
           <button 
             onClick={onClose} 
-            className="text-muted-foreground hover:text-foreground transition-colors duration-200 p-1 rounded-lg hover:bg-accent"
+            className="text-muted-foreground hover:text-foreground transition-colors duration-200 p-1 rounded-lg hover:bg-accent cursor-pointer"
           >
             <X size={20} />
           </button>
