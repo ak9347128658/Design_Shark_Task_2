@@ -202,6 +202,21 @@ const options = {
               type: 'boolean',
               description: 'Whether this is a folder or a file',
             },
+            downloadUrl: {
+              type: 'object',
+              properties: {
+                url: {
+                  type: 'string',
+                  description: 'SAS URL for file download',
+                },
+                expiresAt: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'Expiration timestamp of the SAS URL',
+                },
+              },
+              description: 'Azure storage SAS URL for file download (only for files)',
+            },
             createdAt: {
               type: 'string',
               format: 'date-time',

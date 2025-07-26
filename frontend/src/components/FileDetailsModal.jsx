@@ -61,8 +61,15 @@ const FileDetailsModal = ({ isOpen, onClose, file, onDelete }) => {
   const handleDownload = async () => {
     setLoading(true);
     try {
-      // Implementation for download
-      console.log('Downloading file:', file.name);
+      // Check if downloadUrl is available directly in the file object
+      if (file.downloadUrl && file.downloadUrl.url) {
+        // Open the SAS URL in a new tab
+        window.open(file.downloadUrl.url, '_blank');
+      } else {
+        console.log('No direct download URL available, fetching from API...');
+        // If downloadUrl is not available, implement alternative download method
+        // This could be a call to your fileService.downloadFile method
+      }
     } catch (error) {
       console.error('Download failed:', error);
     } finally {

@@ -202,6 +202,20 @@ export const getFiles = async (req: Request, res: Response) => {
     // Get total count for pagination
     const total = await File.countDocuments(query);
     
+    // Generate downloadUrls for files
+    const filesWithDownloadUrls = await Promise.all(files.map(async (file) => {
+      const fileObj = file.toObject();
+      if (!fileObj.isFolder) {
+        // Generate SAS URL for the file
+        const downloadUrlInfo = await storageService.getDownloadUrl(fileObj.path);
+        return {
+          ...fileObj,
+          downloadUrl: downloadUrlInfo
+        };
+      }
+      return fileObj;
+    }));
+    
     res.status(200).json({
       success: true,
       count: total,
@@ -211,7 +225,7 @@ export const getFiles = async (req: Request, res: Response) => {
         totalPages: Math.ceil(total / limit),
         total
       },
-      data: files,
+      data: filesWithDownloadUrls,
     });
   } catch (error: any) {
     res.status(400).json({
