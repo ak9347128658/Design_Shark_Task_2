@@ -1,0 +1,355 @@
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { 
+  Folder, 
+  File, 
+  MoreHorizontal, 
+  Download, 
+  Share2, 
+  Edit, 
+  Trash2,
+  Image,
+  FileText,
+  Video,
+  Music,
+  Archive
+} from 'lucide-react';
+
+const FileGrid = ({ 
+  folders, 
+  files, 
+  viewMode, 
+  loading, 
+  onFolderClick, 
+  onFileClick, 
+  onDeleteItem,
+  selectedItems,
+  onSelectionChange 
+}) => {
+  
+  const getFileIcon = (fileName, mimeType) => {
+    if (mimeType?.startsWith('image/')) return Image;
+    if (mimeType?.startsWith('video/')) return Video;
+    if (mimeType?.startsWith('audio/')) return Music;
+    if (mimeType?.includes('pdf') || mimeType?.includes('document')) return FileText;
+    if (mimeType?.includes('zip') || mimeType?.includes('rar')) return Archive;
+    return File;
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const handleItemClick = (item) => {
+    if (item.type === 'folder') {
+      onFolderClick(item);
+    } else {
+      onFileClick(item);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading files...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (folders.length === 0 && files.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <Folder size={48} className="mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-lg font-medium mb-2">No files or folders</h3>
+          <p className="text-muted-foreground">Upload files or create folders to get started</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (viewMode === 'list') {
+    return (
+      <div className="space-y-2">
+        {/* Folders */}
+        {folders.map((folder) => (
+          <Card key={folder._id} className="hover:bg-accent/50 transition-colors cursor-pointer">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div 
+                  className="flex items-center space-x-3 flex-1"
+                  onClick={() => handleItemClick(folder)}
+                >
+                  <Folder className="text-blue-500" size={24} />
+                  <div>
+                    <h3 className="font-medium">{folder.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {folder.itemCount || 0} items
+                    </p>
+                  </div>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreHorizontal size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Edit size={16} className="mr-2" />
+                      Rename
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Share2 size={16} className="mr-2" />
+                      Share
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => onDeleteItem(folder._id)}
+                      className="text-red-600"
+                    >
+                      <Trash2 size={16} className="mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        {/* Files */}
+        {files.map((file) => {
+          const FileIcon = getFileIcon(file.name, file.mimeType);
+          return (
+            <Card key={file._id} className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div 
+                    className="flex items-center space-x-3 flex-1"
+                    onClick={() => handleItemClick(file)}
+                  >
+                    <FileIcon className="text-gray-500" size={24} />
+                    <div>
+                      <h3 className="font-medium">{file.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {formatFileSize(file.size)} • {new Date(file.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal size={16} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Download size={16} className="mr-2" />
+                        Download
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Share2 size={16} className="mr-2" />
+                        Share
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Edit size={16} className="mr-2" />
+                        Rename
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => onDeleteItem(file._id)}
+                        className="text-red-600"
+                      >
+                        <Trash2 size={16} className="mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Grid view
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+      {/* Folders */}
+      {folders.map((folder) => (
+        <Card 
+          key={folder._id} 
+          className="group hover:shadow-lg transition-all duration-200 cursor-pointer relative overflow-hidden"
+        >
+          <CardContent className="p-0">
+            {/* Folder Preview */}
+            <div 
+              className="aspect-square bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative"
+              onClick={() => handleItemClick(folder)}
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gray-600 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                  <Folder size={32} className="text-gray-300" />
+                </div>
+                <div className="text-white text-center px-2">
+                  <h3 className="text-sm font-medium mb-1 line-clamp-2">DEZIGN SHARK</h3>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider">ALL ABOUT DESIGN</p>
+                </div>
+              </div>
+              
+              {/* Action buttons overlay */}
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="secondary" size="sm" className="h-8 w-8 p-0">
+                      <MoreHorizontal size={14} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Edit size={16} className="mr-2" />
+                      Rename
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Share2 size={16} className="mr-2" />
+                      Share
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteItem(folder._id);
+                      }}
+                      className="text-red-600"
+                    >
+                      <Trash2 size={16} className="mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+
+            {/* Folder Info */}
+            <div className="p-3 bg-card">
+              <div className="flex items-center space-x-2 mb-1">
+                <Folder size={16} className="text-blue-500 flex-shrink-0" />
+                <h3 className="font-medium text-sm truncate">{folder.name}</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Total Items: {folder.itemCount || 0}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+
+      {/* Files */}
+      {files.map((file) => {
+        const FileIcon = getFileIcon(file.name, file.mimeType);
+        return (
+          <Card 
+            key={file._id} 
+            className="group hover:shadow-lg transition-all duration-200 cursor-pointer relative overflow-hidden"
+          >
+            <CardContent className="p-0">
+              {/* File Preview */}
+              <div 
+                className="aspect-square bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative"
+                onClick={() => handleItemClick(file)}
+              >
+                {file.mimeType?.startsWith('image/') ? (
+                  <img 
+                    src={file.url || '/placeholder-image.jpg'} 
+                    alt={file.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                
+                <div className="w-full h-full flex items-center justify-center text-white" style={{display: file.mimeType?.startsWith('image/') ? 'none' : 'flex'}}>
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gray-600 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                      <FileIcon size={32} className="text-gray-300" />
+                    </div>
+                    <div className="text-white text-center px-2">
+                      <h3 className="text-sm font-medium mb-1 line-clamp-2">DEZIGN SHARK</h3>
+                      <p className="text-xs text-gray-400 uppercase tracking-wider">ALL ABOUT DESIGN</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action buttons overlay */}
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="secondary" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal size={14} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Download size={16} className="mr-2" />
+                        Download
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Share2 size={16} className="mr-2" />
+                        Share
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Edit size={16} className="mr-2" />
+                        Rename
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteItem(file._id);
+                        }}
+                        className="text-red-600"
+                      >
+                        <Trash2 size={16} className="mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+
+              {/* File Info */}
+              <div className="p-3 bg-card">
+                <div className="flex items-center space-x-2 mb-1">
+                  <FileIcon size={16} className="text-gray-500 flex-shrink-0" />
+                  <h3 className="font-medium text-sm truncate">{file.name}</h3>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {formatFileSize(file.size)}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+};
+
+export default FileGrid;
+
