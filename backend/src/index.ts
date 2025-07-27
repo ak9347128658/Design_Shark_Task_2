@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Swagger API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+app.use('/api-docs/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   swaggerOptions: {
     docExpansion: 'none', // 'none' means all sections are collapsed by default
     filter: true,
@@ -61,9 +61,9 @@ app.get('/swagger.json', (req: Request, res: Response) => {
 });
 
 // Mount routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/files', fileRoutes);
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
+app.use('/files', fileRoutes);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
